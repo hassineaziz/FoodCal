@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodCal.ai - Food Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>FoodCal.ai</h1>
+            <p>Identify food instantly with AI</p>
+            <a href="/cook" class="nav-btn">What can I cook?</a>
+        </div>
+
+        <div class="content">
+            <form action="/predict" method="POST" enctype="multipart/form-data">
+
+                <div id="uploadArea" class="upload-area">
+                    <input type="file" name="image" id="imageInput" class="hidden-input" accept="image/*">
+                    <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                        </path>
+                    </svg>
+                    <div class="upload-text">Click to upload or drag and drop</div>
+                    <div class="upload-subtext">SVG, PNG, JPG or GIF (max. 800x400px)</div>
+                </div>
+
+                <div id="previewContainer" class="preview-container">
+                    <img id="previewImage" class="preview-image" src="" alt="Image preview">
+                    <button type="button" id="removeBtn" class="remove-btn" title="Remove image">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                            width="16" height="16">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="divider">OR</div>
+
+                <div class="url-input-group">
+                    <svg class="url-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
+                        </path>
+                    </svg>
+                    <input type="text" name="url" id="urlInput" class="url-input"
+                        placeholder="Paste an image URL here...">
+                </div>
+
+                <div class="divider">OR</div>
+
+                <div class="url-input-group">
+                    <svg class="url-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" name="food_name" id="foodNameInput" class="url-input"
+                        placeholder="Type food name (e.g. Apple Pie)...">
+                </div>
+
+                <button type="submit" class="btn-primary">Identify Food</button>
+            </form>
+
+            {% if prediction %}
+            <div class="result-card {% if 'Error' in prediction %}error{% endif %}">
+                <div class="result-title">
+                    {% if 'Error' in prediction %}Error{% else %}Prediction{% endif %}
+                </div>
+                <div class="result-value">{{ prediction }}</div>
+
+                {% if nutrition %}
+                <div class="nutrition-facts">
+                    <div class="nutrition-header">Nutrition Facts (per {{ nutrition.weight }}g)</div>
+                    <div class="nutrition-grid">
+                        <div class="nutrition-item">
+                            <span class="nutrition-label">Calories</span>
+                            <span class="nutrition-value">{{ nutrition.calories }}</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-label">Protein</span>
+                            <span class="nutrition-value">{{ nutrition.protein }}g</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-label">Carbs</span>
+                            <span class="nutrition-value">{{ nutrition.carbohydrates }}g</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-label">Fat</span>
+                            <span class="nutrition-value">{{ nutrition.fats }}g</span>
+                        </div>
+                    </div>
+                    <div class="nutrition-details">
+                        <span>Fiber: {{ nutrition.fiber }}g</span> •
+                        <span>Sugar: {{ nutrition.sugars }}g</span> •
+                        <span>Sodium: {{ nutrition.sodium }}mg</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if ingredients %}
+                <div class="ingredients-section">
+                    <div class="nutrition-header">Main Ingredients</div>
+                    <div class="ingredients-list">
+                        {% for item in ingredients %}
+                        <span class="ingredient-tag">{{ item }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

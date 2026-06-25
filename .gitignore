@@ -1,0 +1,29 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Model weights — too large for GitHub (~347 MB). See README "Model" section.
+my_final_dinov2_food101_model_FULL/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs
+*.log

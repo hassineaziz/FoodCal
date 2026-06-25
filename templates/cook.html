@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Can I Cook? - FoodCal.ai</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-link">← Back to Home</a>
+            <h1>What Can I Cook?</h1>
+            <p>Enter your ingredients and we'll suggest recipes!</p>
+        </div>
+
+        <div class="content">
+            <form action="/suggest" method="POST">
+
+                <div class="input-group">
+                    <label for="ingredients" class="input-label">Your Ingredients (comma separated)</label>
+                    <textarea name="ingredients" id="ingredients" class="text-area"
+                        placeholder="e.g. eggs, flour, milk, butter...">{{ user_ingredients }}</textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Nutritional Limits (per 100g)</label>
+                    <div class="filters-grid">
+                        <div class="filter-item">
+                            <label for="max_calories">Max Calories</label>
+                            <input type="number" name="max_calories" id="max_calories" placeholder="e.g. 500"
+                                class="filter-input">
+                        </div>
+                        <div class="filter-item">
+                            <label for="max_protein">Min Protein (g)</label>
+                            <input type="number" name="min_protein" id="min_protein" placeholder="e.g. 20"
+                                class="filter-input">
+                        </div>
+                        <div class="filter-item">
+                            <label for="max_carbs">Max Carbs (g)</label>
+                            <input type="number" name="max_carbs" id="max_carbs" placeholder="e.g. 30"
+                                class="filter-input">
+                        </div>
+                        <div class="filter-item">
+                            <label for="max_fat">Max Fat (g)</label>
+                            <input type="number" name="max_fat" id="max_fat" placeholder="e.g. 15" class="filter-input">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">Find Recipes</button>
+            </form>
+
+            {% if suggestions is not none %}
+            <div class="results-section">
+                {% if suggestions %}
+                <div class="result-title" style="margin-top: 2rem;">We found {{ suggestions|length }} recipes for you:
+                </div>
+                <div class="recipe-list">
+                    {% for recipe in suggestions %}
+                    <div class="recipe-card">
+                        <div class="recipe-header">
+                            <span class="recipe-name">{{ recipe.name }}</span>
+                            <span class="match-badge">{{ recipe.match_percentage }}% Match</span>
+                        </div>
+                        <div class="missing-ingredients">
+                            <span class="missing-label">Missing:</span>
+                            {% if recipe.missing %}
+                            <span class="missing-list">{{ recipe.missing|join(', ') }}</span>
+                            {% else %}
+                            <span class="success-text">You have everything!</span>
+                            {% endif %}
+                        </div>
+                        {% if recipe.nutrition %}
+                        <div class="recipe-nutrition">
+                            <span>{{ recipe.nutrition.calories }} kcal</span>
+                            <span> {{ recipe.nutrition.protein }}g Prot</span>
+                            <span>{{ recipe.nutrition.carbohydrates }}g Carb</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="result-card error" style="margin-top: 2rem;">
+                    <div class="result-title">No Matches Found</div>
+                    <div class="result-value" style="font-size: 1rem; font-weight: normal;">
+                        Try adding more ingredients! We couldn't find any recipes matching your ingredients.
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Auto-resize textarea
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = "auto";
+            this.style.height = (this.scrollHeight) + "px";
+        }
+    </script>
+</body>
+
+</html>
